@@ -1,12 +1,17 @@
 package order
 
-import "context"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 type Order struct {
-	ID     int64      `json:"id,omitempty"`
+	ID     uuid.UUID  `json:"uuid"`
 	PLATE  string     `json:"plate"`
 	AMOUNT int64      `json:"amount"`
-	STATE  OrderState `json:"state"`
+	STATE  OrderState `json:"state:omitempty"`
+	HASH   string     `json:"hash:omitempty"`
 }
 
 type OrderState int
@@ -26,7 +31,7 @@ func (t OrderState) String() string {
 	case STATEDELIVERY:
 		return "entregue"
 	default:
-		return "Unknow"
+		return "unknow"
 	}
 }
 
