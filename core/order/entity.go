@@ -6,6 +6,14 @@ import (
 	"github.com/google/uuid"
 )
 
+// table order
+// CREATE TABLE orders(
+//   ID string not null primary key,
+//   Plate text not null,
+//   Score integer not null,
+//   Hash text
+// )
+
 type Order struct {
 	ID    uuid.UUID  `json:"uuid"`
 	Plate string     `json:"plate"`
@@ -37,5 +45,5 @@ func (s OrderState) String() string {
 
 type Repository interface {
 	CreateOrder(ctx context.Context, order Order) error
-	GetOrder(ctx context.Context, uuid string) (string, error)
+	GetOrder(ctx context.Context, uuid string) (Order, error)
 }
