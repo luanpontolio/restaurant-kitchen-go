@@ -7,11 +7,11 @@ import (
 )
 
 type Order struct {
-	ID     uuid.UUID  `json:"uuid"`
-	PLATE  string     `json:"plate"`
-	AMOUNT int64      `json:"amount"`
-	STATE  OrderState `json:"state:omitempty"`
-	HASH   string     `json:"hash:omitempty"`
+	ID    uuid.UUID  `json:"uuid"`
+	Plate string     `json:"plate"`
+	Score int64      `json:"amount"`
+	State OrderState `json:"state:omitempty"`
+	Hash  string     `json:"hash:omitempty"`
 }
 
 type OrderState int
@@ -22,8 +22,8 @@ const (
 	STATEDELIVERY = 2
 )
 
-func (t OrderState) String() string {
-	switch t {
+func (s OrderState) String() string {
+	switch s {
 	case STATEWAIT:
 		return "esperando"
 	case STATEPREPARE:
