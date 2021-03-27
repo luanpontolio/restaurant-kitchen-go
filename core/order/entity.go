@@ -3,7 +3,7 @@ package order
 import "context"
 
 type Order struct {
-	UUID   int64      `json:"uuid"`
+	ID     int64      `json:"id,omitempty"`
 	PLATE  string     `json:"plate"`
 	AMOUNT int64      `json:"amount"`
 	STATE  OrderState `json:"state"`
