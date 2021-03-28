@@ -91,7 +91,7 @@ func TestGetOrder(t *testing.T) {
 		defer clearAndClose(db, t)
 		_, e := r.GetOrder(ctx, "")
 
-		assert.Containsf(t, "Unable to handle Repo Request", "Unable to handle", e.Error())
+		assert.Contains(t, e.Error(), "Unable to handle")
 	})
 
 	t.Run("failed when id is invalid", func(t *testing.T) {
@@ -102,7 +102,7 @@ func TestGetOrder(t *testing.T) {
 		defer clearAndClose(db, t)
 		_, e := r.GetOrder(ctx, "1234")
 
-		assert.Containsf(t, "Unable to handle Repo Request", "Unable to handle", e.Error())
+		assert.Contains(t, e.Error(), "Unable to handle")
 	})
 
 	t.Run("success get order", func(t *testing.T) {
