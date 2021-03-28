@@ -69,7 +69,7 @@ func TestCreateOrder(t *testing.T) {
 
 	t.Run("failed when score is 0", func(t *testing.T) {
 		id := uuid.New()
-		o := newOrder(id, "Sant pieter", 0)
+		o := newOrder(id, "Saint pieter", 0)
 		db := getDB(t)
 		ctx := context.Background()
 		r := NewRepo(db, nil)
@@ -136,7 +136,7 @@ func TestGetOrder(t *testing.T) {
 
 	t.Run("success get order", func(t *testing.T) {
 		id := uuid.New()
-		o := newOrder(id, "Sant pieter", 5)
+		o := newOrder(id, "Saint pieter", 5)
 		db := getDB(t)
 		ctx := context.Background()
 		r := NewRepo(db, nil)
@@ -145,7 +145,7 @@ func TestGetOrder(t *testing.T) {
 		r.CreateOrder(ctx, *o)
 		result, _ := r.GetOrder(ctx, id.String())
 
-		assert.Contains(t, result.Plate, "Sant pieter")
+		assert.Contains(t, result.Plate, "Saint pieter")
 		assert.Contains(t, result.State.String(), "esperando")
 	})
 }

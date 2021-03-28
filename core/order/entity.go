@@ -2,25 +2,21 @@ package order
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 // table order
-// CREATE TABLE orders(
-//   ID string not null primary key,
-//   Plate text not null,
-//   Score integer not null,
-//   State integer
-//   Hash text
-// )
-
+// CREATE TABLE orders(ID string not null primary key, Plate text not null, Score integer not null, State integer, Hash text, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp);
 type Order struct {
-	ID    uuid.UUID  `json:"uuid"`
-	Plate string     `json:"plate"`
-	Score int64      `json:"amount"`
-	State OrderState `json:"state:omitempty"`
-	Hash  string     `json:"hash:omitempty"`
+	ID        uuid.UUID  `json:"uuid"`
+	Plate     string     `json:"plate"`
+	Score     int64      `json:"amount"`
+	State     OrderState `json:"state:omitempty"`
+	Hash      string     `json:"hash:omitempty"`
+	CreatedAt time.Time  `json:"created_at:omitempty"`
+	UpdatedAt time.Time  `json:"updated_at:omitempty"`
 }
 
 type OrderState int
