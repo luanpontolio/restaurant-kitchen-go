@@ -80,3 +80,43 @@ func TestCreateOrder(t *testing.T) {
 		assert.NotEmpty(t, e)
 	})
 }
+
+func TestGetOrder(t *testing.T) {
+
+	t.Run("failed when id is empty", func(t *testing.T) {
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		_, e := r.GetOrder(ctx, "")
+
+		assert.Containsf(t, "Unable to handle Repo Request", "Unable to handle", e.Error())
+	})
+
+	t.Run("failed when id is invalid", func(t *testing.T) {
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		_, e := r.GetOrder(ctx, "1234")
+
+		assert.Containsf(t, "Unable to handle Repo Request", "Unable to handle", e.Error())
+	})
+
+	t.Run("success get order", func(t *testing.T) {
+		id := uuid.New()
+		o := newOrder(id, "Sant pieter", 5)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		r.CreateOrder(ctx, *o)
+		result, _ := r.GetOrder(ctx, id.String())
+
+		assert.Contains(t, result.Plate, "Sant pieter")
+		assert.Contains(t, result.State.String(), "esperando")
+	})
+}
