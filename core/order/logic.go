@@ -40,6 +40,31 @@ func (s service) CreateOrder(ctx context.Context, plate string, score int64) (st
 	return "Success", nil
 }
 
+func (s service) UpdateOrder(ctx context.Context, id string, plate string, score int64) (string, error) {
+	logger := log.With(s.logger, "method", "UpdateOrder")
+
+	uid := uuid.MustParse(id)
+	if uid.String() == "" {
+		level.Error(logger).Log("err: invalid id %s", id)
+		return "Invalid Id", nil
+	}
+
+	order := Order{
+		ID:    uid,
+		Plate: plate,
+		Score: score,
+	}
+
+	if err := s.repostory.UpdateOrder(ctx, order); err != nil {
+		level.Error(logger).Log("err", err)
+		return "", err
+	}
+
+	logger.Log("update order", id)
+
+	return "Success", nil
+}
+
 func (s service) GetOrder(ctx context.Context, id string) (*Order, error) {
 	logger := log.With(s.logger, "method", "GetOrder")
 

@@ -38,6 +38,20 @@ func (repo *repo) CreateOrder(ctx context.Context, order Order) error {
 	return nil
 }
 
+func (repo *repo) UpdateOrder(ctx context.Context, order Order) error {
+	sql := `UPDATE orders SET plate=$1, score=$2 where id=$3 and state=$4`
+
+	if order.Plate == "" || order.Score == 0 {
+		return nil
+	}
+
+	_, err := repo.db.ExecContext(ctx, sql, order.Plate, order.Score, order.ID, 0)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repo *repo) GetOrder(ctx context.Context, id string) (*Order, error) {
 	var order Order
 	err := repo.db.QueryRow("SELECT * FROM orders WHERE id=$1", id).Scan(
@@ -47,6 +61,5 @@ func (repo *repo) GetOrder(ctx context.Context, id string) (*Order, error) {
 	if err != nil {
 		return &order, RepoErr
 	}
-
 	return &order, nil
 }

@@ -81,6 +81,35 @@ func TestCreateOrder(t *testing.T) {
 	})
 }
 
+func TestUpdateOrder(t *testing.T) {
+	t.Run("not execute when params are empty", func(t *testing.T) {
+		o := newOrder(uuid.Nil, "", 0)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		e := r.UpdateOrder(ctx, *o)
+
+		assert.Nil(t, e)
+	})
+
+	t.Run("success update a onder", func(t *testing.T) {
+		uid := uuid.New()
+		o1 := newOrder(uid, "Parmegiana", 5)
+		o2 := newOrder(uid, "Parmegiana de Frango", 10)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		r.CreateOrder(ctx, *o1)
+		e := r.UpdateOrder(ctx, *o2)
+
+		assert.Nil(t, e)
+	})
+}
+
 func TestGetOrder(t *testing.T) {
 
 	t.Run("failed when id is empty", func(t *testing.T) {
