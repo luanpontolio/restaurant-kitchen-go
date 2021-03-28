@@ -11,6 +11,7 @@ import (
 //   ID string not null primary key,
 //   Plate text not null,
 //   Score integer not null,
+//   State integer
 //   Hash text
 // )
 
@@ -45,5 +46,6 @@ func (s OrderState) String() string {
 
 type Repository interface {
 	CreateOrder(ctx context.Context, order Order) error
+	UpdateOrder(ctx context.Context, order Order) error
 	GetOrder(ctx context.Context, id string) (*Order, error)
 }
