@@ -45,5 +45,5 @@ func (s OrderState) String() string {
 
 type Repository interface {
 	CreateOrder(ctx context.Context, order Order) error
-	GetOrder(ctx context.Context, uuid string) (Order, error)
+	GetOrder(ctx context.Context, id string) (*Order, error)
 }
