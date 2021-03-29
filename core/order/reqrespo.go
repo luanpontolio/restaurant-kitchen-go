@@ -13,6 +13,7 @@ type (
 		Score int64  `json:"score"`
 	}
 	OrderResponse struct {
+		Id string `json:"id"`
 		Ok string `json:"ok"`
 	}
 )

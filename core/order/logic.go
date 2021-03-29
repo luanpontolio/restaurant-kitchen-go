@@ -20,7 +20,7 @@ func NewService(rep Repository, logger log.Logger) Service {
 	}
 }
 
-func (s service) CreateOrder(ctx context.Context, plate string, score int64) (string, error) {
+func (s service) CreateOrder(ctx context.Context, plate string, score int64) (string, string, error) {
 	logger := log.With(s.logger, "method", "CreateOrder")
 
 	id := uuid.New()
@@ -32,12 +32,12 @@ func (s service) CreateOrder(ctx context.Context, plate string, score int64) (st
 
 	if err := s.repostory.CreateOrder(ctx, order); err != nil {
 		level.Error(logger).Log("err", err)
-		return "", err
+		return "", "", err
 	}
 
 	logger.Log("create order", id)
 
-	return "Success", nil
+	return id.String(), "Success", nil
 }
 
 func (s service) UpdateOrder(ctx context.Context, id string, plate string, score int64) (string, error) {
