@@ -8,7 +8,8 @@ import (
 )
 
 // table order
-// CREATE TABLE orders(ID string not null primary key, Plate text not null, Score integer not null, State integer, Hash text, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp);
+// CREATE TABLE orders(ID string not null primary key, Plate text not null, Score integer not null, State integer, Hash text, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
+// CREATE TABLE cooks(ID string not null primary key, Name text not null, Score integer not null, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
 type Order struct {
 	ID        uuid.UUID  `json:"uuid"`
 	Plate     string     `json:"plate"`
