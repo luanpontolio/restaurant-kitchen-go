@@ -12,8 +12,14 @@ func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 	r := mux.NewRouter()
 	r.Use(commonMiddleware)
 
-	r.Methods("POST").Path("/order").Handler(httptransport.NewServer(
+	r.Methods("POST").Path("/v1/order").Handler(httptransport.NewServer(
 		endpoints.CreateOrder,
+		decodeOrderReq,
+		encodeResponse,
+	))
+
+	r.Methods("PUT").Path("/v1/order/{id}").Handler(httptransport.NewServer(
+		endpoints.UpdateOrder,
 		decodeOrderReq,
 		encodeResponse,
 	))
