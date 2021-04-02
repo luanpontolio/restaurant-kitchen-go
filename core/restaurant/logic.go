@@ -97,13 +97,13 @@ func (s service) UpdateCook(ctx context.Context, id string, score int64) (string
 		ID:    uuid.MustParse(id),
 		Score: score,
 	}
-	fmt.Printf("object Order %v", cook)
+	fmt.Printf("object Cook %v", cook)
 	if err := s.repostory.UpdateCook(ctx, cook); err != nil {
 		level.Error(logger).Log("err", err)
 		return "", "", err
 	}
 
-	logger.Log("update order", id)
+	logger.Log("update cook", id)
 
 	return id, "Success", nil
 }

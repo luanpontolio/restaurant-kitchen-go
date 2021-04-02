@@ -9,14 +9,18 @@ import (
 type Endpoints struct {
 	CreateOrder endpoint.Endpoint
 	UpdateOrder endpoint.Endpoint
-	CreateCook  endpoint.Endpoint
+
+	CreateCook endpoint.Endpoint
+	UpdateCook endpoint.Endpoint
 }
 
 func MakeEndpoints(s RestaurantService) Endpoints {
 	return Endpoints{
 		CreateOrder: makeCreateOrderEndpoint(s),
 		UpdateOrder: makeUpdateOrderEndpoint(s),
-		CreateCook:  makeCreateCookEndpoint(s),
+
+		CreateCook: makeCreateCookEndpoint(s),
+		UpdateCook: makeUpdateCookEndpoint(s),
 	}
 }
 
@@ -48,6 +52,18 @@ func makeCreateCookEndpoint(s RestaurantService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CookRequest)
 		id, msg, err := s.CreateCook(ctx, req.Name, req.Score)
+		if err != nil {
+			return Response{Ok: "Invalid data"}, err
+		}
+
+		return Response{Id: id, Ok: msg}, err
+	}
+}
+
+func makeUpdateCookEndpoint(s RestaurantService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(CookRequest)
+		id, msg, err := s.UpdateCook(ctx, req.Id, req.Score)
 		if err != nil {
 			return Response{Ok: "Invalid data"}, err
 		}

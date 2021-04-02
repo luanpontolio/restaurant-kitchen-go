@@ -42,6 +42,7 @@ func decodeOrderReq(ctx context.Context, r *http.Request) (interface{}, error) {
 
 func decodeCookReq(ctx context.Context, r *http.Request) (interface{}, error) {
 	var req CookRequest
+	req.Id = mux.Vars(r)["id"]
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err

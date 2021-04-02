@@ -30,6 +30,12 @@ func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 		encodeResponse,
 	))
 
+	r.Methods("PUT").Path("/v1/cook/{id}").Handler(httptransport.NewServer(
+		endpoints.UpdateCook,
+		decodeCookReq,
+		encodeResponse,
+	))
+
 	return r
 }
 
