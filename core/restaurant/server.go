@@ -1,4 +1,4 @@
-package order
+package restaurant
 
 import (
 	"context"
@@ -21,6 +21,12 @@ func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 	r.Methods("PUT").Path("/v1/order/{id}").Handler(httptransport.NewServer(
 		endpoints.UpdateOrder,
 		decodeOrderReq,
+		encodeResponse,
+	))
+
+	r.Methods("POST").Path("/v1/cook").Handler(httptransport.NewServer(
+		endpoints.CreateCook,
+		decodeCookReq,
 		encodeResponse,
 	))
 

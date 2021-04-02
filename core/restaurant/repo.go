@@ -1,4 +1,4 @@
-package order
+package restaurant
 
 import (
 	"context"
@@ -15,7 +15,7 @@ type repo struct {
 	logger log.Logger
 }
 
-func NewRepo(db *sql.DB, logger log.Logger) Repository {
+func NewRepo(db *sql.DB, logger log.Logger) RestaurantRespository {
 	return &repo{
 		db:     db,
 		logger: log.With(logger, "repo", "sql"),
@@ -24,14 +24,14 @@ func NewRepo(db *sql.DB, logger log.Logger) Repository {
 
 func (repo *repo) CreateOrder(ctx context.Context, order Order) error {
 	sql := `
-		INSERT INTO orders (id, plate, score)
-		VALUES ($1, $2, $3)`
+		INSERT INTO orders (id, plate, score, state)
+		VALUES ($1, $2, $3, $4)`
 
 	if order.Plate == "" || order.Score == 0 {
 		return RepoErr
 	}
 
-	_, err := repo.db.ExecContext(ctx, sql, order.ID, order.Plate, order.Score)
+	_, err := repo.db.ExecContext(ctx, sql, order.ID, order.Plate, order.Score, 0)
 	if err != nil {
 		return err
 	}
@@ -52,14 +52,18 @@ func (repo *repo) UpdateOrder(ctx context.Context, order Order) error {
 	return nil
 }
 
-func (repo *repo) GetOrder(ctx context.Context, id string) (*Order, error) {
-	var order Order
-	err := repo.db.QueryRow("SELECT id, plate, score, hash FROM orders WHERE id=$1", id).Scan(
-		&order.ID, &order.Plate, &order.Score, &order.Hash,
-	)
+func (repo *repo) CreateCook(ctx context.Context, cook Cook) error {
+	sql := `
+		INSERT INTO cooks (id, name, score)
+		VALUES ($1, $2, $3)`
 
-	if err != nil {
-		return &order, RepoErr
+	if cook.Name == "" || cook.Score == 0 {
+		return RepoErr
 	}
-	return &order, nil
+
+	_, err := repo.db.ExecContext(ctx, sql, cook.ID, cook.Name, cook.Score)
+	if err != nil {
+		return err
+	}
+	return nil
 }

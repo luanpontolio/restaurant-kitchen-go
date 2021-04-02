@@ -1,4 +1,4 @@
-package order
+package restaurant
 
 import (
 	"context"
@@ -18,6 +18,14 @@ type Order struct {
 	Hash      string     `json:"hash:omitempty"`
 	CreatedAt time.Time  `json:"created_at:omitempty"`
 	UpdatedAt time.Time  `json:"updated_at:omitempty"`
+}
+
+type Cook struct {
+	ID        uuid.UUID `json:"uuid"`
+	Name      string    `json:"plate"`
+	Score     int64     `json:"amount"`
+	CreatedAt time.Time `json:"created_at:omitempty"`
+	UpdatedAt time.Time `json:"updated_at:omitempty"`
 }
 
 type OrderState int
@@ -41,8 +49,16 @@ func (s OrderState) String() string {
 	}
 }
 
-type Repository interface {
+type OrderRepository interface {
 	CreateOrder(ctx context.Context, order Order) error
 	UpdateOrder(ctx context.Context, order Order) error
-	GetOrder(ctx context.Context, id string) (*Order, error)
+}
+
+type CookRepository interface {
+	CreateCook(ctx context.Context, cook Cook) error
+}
+
+type RestaurantRespository interface {
+	OrderRepository
+	CookRepository
 }

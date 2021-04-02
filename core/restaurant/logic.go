@@ -1,7 +1,8 @@
-package order
+package restaurant
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
@@ -9,11 +10,11 @@ import (
 )
 
 type service struct {
-	repostory Repository
+	repostory RestaurantRespository
 	logger    log.Logger
 }
 
-func NewService(rep Repository, logger log.Logger) Service {
+func NewService(rep RestaurantRespository, logger log.Logger) RestaurantService {
 	return &service{
 		repostory: rep,
 		logger:    logger,
@@ -40,42 +41,46 @@ func (s service) CreateOrder(ctx context.Context, plate string, score int64) (st
 	return id.String(), "Success", nil
 }
 
-func (s service) UpdateOrder(ctx context.Context, id string, plate string, score int64) (string, error) {
+func (s service) UpdateOrder(ctx context.Context, id string, plate string, score int64) (string, string, error) {
 	logger := log.With(s.logger, "method", "UpdateOrder")
 
-	uid := uuid.MustParse(id)
-	if uid.String() == "" {
+	if id == "" {
 		level.Error(logger).Log("err: invalid id %s", id)
-		return "Invalid Id", nil
+		return "", "Invalid Id", nil
 	}
 
 	order := Order{
-		ID:    uid,
+		ID:    uuid.MustParse(id),
 		Plate: plate,
 		Score: score,
 	}
-
+	fmt.Printf("object Order %v", order)
 	if err := s.repostory.UpdateOrder(ctx, order); err != nil {
 		level.Error(logger).Log("err", err)
-		return "", err
+		return "", "", err
 	}
 
 	logger.Log("update order", id)
 
-	return "Success", nil
+	return id, "Success", nil
 }
 
-func (s service) GetOrder(ctx context.Context, id string) (*Order, error) {
-	logger := log.With(s.logger, "method", "GetOrder")
+func (s service) CreateCook(ctx context.Context, name string, score int64) (string, string, error) {
+	logger := log.With(s.logger, "method", "CreateCook")
 
-	order, err := s.repostory.GetOrder(ctx, id)
-
-	if err != nil {
-		level.Error(logger).Log("err", err)
-		return order, err
+	id := uuid.New()
+	cook := Cook{
+		ID:    id,
+		Name:  name,
+		Score: score,
 	}
 
-	logger.Log("Get order", id)
+	if err := s.repostory.CreateCook(ctx, cook); err != nil {
+		level.Error(logger).Log("err", err)
+		return "", "", err
+	}
 
-	return order, nil
+	logger.Log("create cook", id)
+
+	return id.String(), "Success", nil
 }

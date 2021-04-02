@@ -1,4 +1,4 @@
-package order
+package restaurant
 
 import (
 	"database/sql"
