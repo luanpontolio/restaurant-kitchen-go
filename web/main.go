@@ -16,7 +16,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/luanpontolio/restaurant-kitchen-go/core/order"
+	"github.com/luanpontolio/restaurant-kitchen-go/core/restaurant"
 )
 
 const dbsource = "data/restaurant.db"
@@ -51,11 +51,11 @@ func main() {
 
 	flag.Parse()
 	ctx := context.Background()
-	var srv order.Service
+	var srv restaurant.RestaurantService
 	{
-		repository := order.NewRepo(db, logger)
+		repository := restaurant.NewRepo(db, logger)
 
-		srv = order.NewService(repository, logger)
+		srv = restaurant.NewService(repository, logger)
 	}
 
 	errs := make(chan error)
@@ -66,11 +66,11 @@ func main() {
 		errs <- fmt.Errorf("%s", <-c)
 	}()
 
-	endpoints := order.MakeEndpoints(srv)
+	endpoints := restaurant.MakeEndpoints(srv)
 
 	go func() {
 		fmt.Println("listening on port", *httpAddr)
-		handler := order.NewHTTPServer(ctx, endpoints)
+		handler := restaurant.NewHTTPServer(ctx, endpoints)
 		errs <- http.ListenAndServe(*httpAddr, handler)
 	}()
 
