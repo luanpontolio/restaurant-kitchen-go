@@ -9,6 +9,7 @@ type OrderService interface {
 
 type CookService interface {
 	CreateCook(ctx context.Context, name string, score int64) (string, string, error)
+	UpdateCook(ctx context.Context, id string, score int64) (string, string, error)
 }
 
 type RestaurantService interface {

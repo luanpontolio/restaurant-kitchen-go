@@ -84,3 +84,26 @@ func (s service) CreateCook(ctx context.Context, name string, score int64) (stri
 
 	return id.String(), "Success", nil
 }
+
+func (s service) UpdateCook(ctx context.Context, id string, score int64) (string, string, error) {
+	logger := log.With(s.logger, "method", "UpdateCook")
+
+	if id == "" {
+		level.Error(logger).Log("err: invalid id %s", id)
+		return "", "Invalid Id", nil
+	}
+
+	cook := Cook{
+		ID:    uuid.MustParse(id),
+		Score: score,
+	}
+	fmt.Printf("object Order %v", cook)
+	if err := s.repostory.UpdateCook(ctx, cook); err != nil {
+		level.Error(logger).Log("err", err)
+		return "", "", err
+	}
+
+	logger.Log("update order", id)
+
+	return id, "Success", nil
+}

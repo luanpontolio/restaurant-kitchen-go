@@ -16,6 +16,14 @@ func newOrder(id uuid.UUID, plate string, score int64) *Order {
 	}
 }
 
+func newCook(id uuid.UUID, name string, score int64) *Cook {
+	return &Cook{
+		ID:    id,
+		Name:  name,
+		Score: score,
+	}
+}
+
 func getDB(t *testing.T) *sql.DB {
 	db, err := sql.Open("sqlite3", "../../data/restaurant_test.db")
 	assert.Nil(t, err)

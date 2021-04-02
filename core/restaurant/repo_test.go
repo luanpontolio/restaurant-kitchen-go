@@ -78,3 +78,44 @@ func TestUpdateOrder(t *testing.T) {
 		assert.Nil(t, e)
 	})
 }
+
+func TestCreateCook(t *testing.T) {
+	t.Run("success to create a new cooker", func(t *testing.T) {
+		id := uuid.New()
+		c := newCook(id, "Alfredo", 5)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		e := r.CreateCook(ctx, *c)
+
+		assert.Nil(t, e)
+	})
+
+	t.Run("failed when name is empty", func(t *testing.T) {
+		id := uuid.New()
+		c := newCook(id, "", 5)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		e := r.CreateCook(ctx, *c)
+
+		assert.NotEmpty(t, e)
+	})
+
+	t.Run("failed when score is 0", func(t *testing.T) {
+		id := uuid.New()
+		c := newCook(id, "Alfredo", 0)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		e := r.CreateCook(ctx, *c)
+
+		assert.NotEmpty(t, e)
+	})
+}

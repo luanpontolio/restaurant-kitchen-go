@@ -67,3 +67,17 @@ func (repo *repo) CreateCook(ctx context.Context, cook Cook) error {
 	}
 	return nil
 }
+
+func (repo *repo) UpdateCook(ctx context.Context, cook Cook) error {
+	sql := `UPDATE cooks SET score=$1 where id=$2`
+
+	if cook.Score == 0 {
+		return nil
+	}
+
+	_, err := repo.db.ExecContext(ctx, sql, cook.Score, cook.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

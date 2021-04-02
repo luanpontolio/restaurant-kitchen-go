@@ -56,6 +56,7 @@ type OrderRepository interface {
 
 type CookRepository interface {
 	CreateCook(ctx context.Context, cook Cook) error
+	UpdateCook(ctx context.Context, cook Cook) error
 }
 
 type RestaurantRespository interface {
