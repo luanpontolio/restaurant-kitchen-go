@@ -2,7 +2,6 @@ package restaurant
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
@@ -19,6 +18,20 @@ func NewService(rep RestaurantRespository, logger log.Logger) RestaurantService 
 		repostory: rep,
 		logger:    logger,
 	}
+}
+
+func (s service) GetAllOrder(ctx context.Context, state int64, delivery_at bool) ([]*Order, error) {
+	logger := log.With(s.logger, "method", "GetAllOrder")
+
+	orders, err := s.repostory.GetAllOrder(ctx, state, delivery_at)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return nil, err
+	}
+
+	logger.Log("load order", orders)
+
+	return orders, nil
 }
 
 func (s service) CreateOrder(ctx context.Context, plate string, score int64) (string, string, error) {
@@ -54,7 +67,7 @@ func (s service) UpdateOrder(ctx context.Context, id string, plate string, score
 		Plate: plate,
 		Score: score,
 	}
-	fmt.Printf("object Order %v", order)
+
 	if err := s.repostory.UpdateOrder(ctx, order); err != nil {
 		level.Error(logger).Log("err", err)
 		return "", "", err
@@ -97,7 +110,7 @@ func (s service) UpdateCook(ctx context.Context, id string, score int64) (string
 		ID:    uuid.MustParse(id),
 		Score: score,
 	}
-	fmt.Printf("object Cook %v", cook)
+
 	if err := s.repostory.UpdateCook(ctx, cook); err != nil {
 		level.Error(logger).Log("err", err)
 		return "", "", err

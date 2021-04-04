@@ -8,22 +8,23 @@ import (
 )
 
 // table order
-// CREATE TABLE orders(ID string not null primary key, Plate text not null, Score integer not null, State integer, Hash text, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
+// CREATE TABLE orders(ID string not null primary key, Plate text not null, Score integer not null, State integer, Hash text default '', DeliveryAt timestamp, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
 // CREATE TABLE cooks(ID string not null primary key, Name text not null, Score integer not null, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
 type Order struct {
-	ID        uuid.UUID  `json:"uuid"`
-	Plate     string     `json:"plate"`
-	Score     int64      `json:"amount"`
-	State     OrderState `json:"state:omitempty"`
-	Hash      string     `json:"hash:omitempty"`
-	CreatedAt time.Time  `json:"created_at:omitempty"`
-	UpdatedAt time.Time  `json:"updated_at:omitempty"`
+	ID         uuid.UUID  `json:"uuid"`
+	Plate      string     `json:"plate"`
+	Score      int64      `json:"score"`
+	State      OrderState `json:"state"`
+	Hash       string     `json:"hash"`
+	DeliveryAt string     `json:"delivery_at"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
 type Cook struct {
 	ID        uuid.UUID `json:"uuid"`
 	Name      string    `json:"plate"`
-	Score     int64     `json:"amount"`
+	Score     int64     `json:"score"`
 	CreatedAt time.Time `json:"created_at:omitempty"`
 	UpdatedAt time.Time `json:"updated_at:omitempty"`
 }
@@ -50,6 +51,7 @@ func (s OrderState) String() string {
 }
 
 type OrderRepository interface {
+	GetAllOrder(ctx context.Context, score int64, delivery_at bool) ([]*Order, error)
 	CreateOrder(ctx context.Context, order Order) error
 	UpdateOrder(ctx context.Context, order Order) error
 }

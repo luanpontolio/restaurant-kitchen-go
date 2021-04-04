@@ -28,7 +28,7 @@ func main() {
 		logger = log.NewLogfmtLogger(os.Stderr)
 		logger = log.NewSyncLogger(logger)
 		logger = log.With(logger,
-			"service", "order",
+			"service", "restaurant",
 			"time:", log.DefaultTimestampUTC,
 			"caller", log.DefaultCaller,
 		)

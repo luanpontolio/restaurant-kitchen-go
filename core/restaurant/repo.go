@@ -22,6 +22,33 @@ func NewRepo(db *sql.DB, logger log.Logger) RestaurantRespository {
 	}
 }
 
+func (repo *repo) GetAllOrder(ctx context.Context, state int64, delivery_at bool) ([]*Order, error) {
+	var result []*Order
+	var sort string
+
+	if delivery_at {
+		sort += " order by deliveryat"
+	} else {
+		sort += " order by createdat"
+	}
+
+	sql := "select * from orders where state=$1 " + sort
+	rows, err := repo.db.QueryContext(ctx, sql, state)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var o Order
+		err = rows.Scan(&o.ID, &o.Plate, &o.Score, &o.State, &o.Hash, &o.DeliveryAt, &o.CreatedAt, &o.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, &o)
+	}
+	return result, nil
+}
+
 func (repo *repo) CreateOrder(ctx context.Context, order Order) error {
 	sql := `
 		INSERT INTO orders (id, plate, score, state)

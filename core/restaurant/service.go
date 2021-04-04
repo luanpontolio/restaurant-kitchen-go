@@ -3,6 +3,7 @@ package restaurant
 import "context"
 
 type OrderService interface {
+	GetAllOrder(ctx context.Context, state int64, delivery_at bool) ([]*Order, error)
 	CreateOrder(ctx context.Context, plate string, amount int64) (string, string, error)
 	UpdateOrder(ctx context.Context, id string, plate string, amount int64) (string, string, error)
 }

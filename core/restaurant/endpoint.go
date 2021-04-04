@@ -7,8 +7,9 @@ import (
 )
 
 type Endpoints struct {
-	CreateOrder endpoint.Endpoint
-	UpdateOrder endpoint.Endpoint
+	ListAllOrder endpoint.Endpoint
+	CreateOrder  endpoint.Endpoint
+	UpdateOrder  endpoint.Endpoint
 
 	CreateCook endpoint.Endpoint
 	UpdateCook endpoint.Endpoint
@@ -16,11 +17,25 @@ type Endpoints struct {
 
 func MakeEndpoints(s RestaurantService) Endpoints {
 	return Endpoints{
-		CreateOrder: makeCreateOrderEndpoint(s),
-		UpdateOrder: makeUpdateOrderEndpoint(s),
+		ListAllOrder: makeGetAllOrdersEndpoint(s),
+		CreateOrder:  makeCreateOrderEndpoint(s),
+		UpdateOrder:  makeUpdateOrderEndpoint(s),
 
 		CreateCook: makeCreateCookEndpoint(s),
 		UpdateCook: makeUpdateCookEndpoint(s),
+	}
+}
+
+func makeGetAllOrdersEndpoint(s RestaurantService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(OrderRequest)
+
+		orders, err := s.GetAllOrder(ctx, req.State, req.DeliveryAt)
+		if err != nil {
+			return Response{Ok: "Invalid arguments"}, err
+		}
+
+		return Response{Data: orders, Ok: "Success"}, nil
 	}
 }
 
