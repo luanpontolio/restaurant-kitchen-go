@@ -1,4 +1,4 @@
-package order
+package restaurant
 
 import (
 	"database/sql"
@@ -12,6 +12,14 @@ func newOrder(id uuid.UUID, plate string, score int64) *Order {
 	return &Order{
 		ID:    id,
 		Plate: plate,
+		Score: score,
+	}
+}
+
+func newCook(id uuid.UUID, name string, score int64) *Cook {
+	return &Cook{
+		ID:    id,
+		Name:  name,
 		Score: score,
 	}
 }

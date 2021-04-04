@@ -1,4 +1,4 @@
-package order
+package restaurant
 
 import (
 	"context"
@@ -79,42 +79,43 @@ func TestUpdateOrder(t *testing.T) {
 	})
 }
 
-func TestGetOrder(t *testing.T) {
-
-	t.Run("failed when id is empty", func(t *testing.T) {
-		db := getDB(t)
-		ctx := context.Background()
-		r := NewRepo(db, nil)
-
-		defer clearAndClose(db, t)
-		_, e := r.GetOrder(ctx, "")
-
-		assert.Contains(t, e.Error(), "Unable to handle")
-	})
-
-	t.Run("failed when id is invalid", func(t *testing.T) {
-		db := getDB(t)
-		ctx := context.Background()
-		r := NewRepo(db, nil)
-
-		defer clearAndClose(db, t)
-		_, e := r.GetOrder(ctx, "1234")
-
-		assert.Contains(t, e.Error(), "Unable to handle")
-	})
-
-	t.Run("success get order", func(t *testing.T) {
+func TestCreateCook(t *testing.T) {
+	t.Run("success to create a new cooker", func(t *testing.T) {
 		id := uuid.New()
-		o := newOrder(id, "Saint pieter", 5)
+		c := newCook(id, "Alfredo", 5)
 		db := getDB(t)
 		ctx := context.Background()
 		r := NewRepo(db, nil)
 
 		defer clearAndClose(db, t)
-		r.CreateOrder(ctx, *o)
-		result, _ := r.GetOrder(ctx, id.String())
+		e := r.CreateCook(ctx, *c)
 
-		assert.Contains(t, result.Plate, "Saint pieter")
-		assert.Contains(t, result.State.String(), "esperando")
+		assert.Nil(t, e)
+	})
+
+	t.Run("failed when name is empty", func(t *testing.T) {
+		id := uuid.New()
+		c := newCook(id, "", 5)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		e := r.CreateCook(ctx, *c)
+
+		assert.NotEmpty(t, e)
+	})
+
+	t.Run("failed when score is 0", func(t *testing.T) {
+		id := uuid.New()
+		c := newCook(id, "Alfredo", 0)
+		db := getDB(t)
+		ctx := context.Background()
+		r := NewRepo(db, nil)
+
+		defer clearAndClose(db, t)
+		e := r.CreateCook(ctx, *c)
+
+		assert.NotEmpty(t, e)
 	})
 }
