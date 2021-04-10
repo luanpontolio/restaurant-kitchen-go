@@ -23,8 +23,10 @@ type (
 		Score int64  `json:"score"`
 	}
 	Response struct {
-		Id   string   `json:"id"`
-		Ok   string   `json:"ok"`
+		Id string `json:"id"`
+		Ok string `json:"ok"`
+	}
+	ListResponse struct {
 		Data []*Order `json:"data"`
 	}
 )

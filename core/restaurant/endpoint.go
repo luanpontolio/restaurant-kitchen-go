@@ -35,7 +35,7 @@ func makeGetAllOrdersEndpoint(s RestaurantService) endpoint.Endpoint {
 			return Response{Ok: "Invalid arguments"}, err
 		}
 
-		return Response{Data: orders, Ok: "Success"}, nil
+		return ListResponse{Data: orders}, nil
 	}
 }
 
