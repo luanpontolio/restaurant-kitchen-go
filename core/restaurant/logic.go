@@ -2,11 +2,18 @@ package restaurant
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/base64"
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/google/uuid"
 )
+
+func encryptSHA256(value string) string {
+	h := sha256.Sum256([]byte(value))
+	return base64.StdEncoding.EncodeToString(h[:])
+}
 
 type service struct {
 	repostory RestaurantRespository
@@ -54,7 +61,7 @@ func (s service) CreateOrder(ctx context.Context, plate string, score int64) (st
 	return id.String(), "Success", nil
 }
 
-func (s service) UpdateOrder(ctx context.Context, id string, plate string, score int64) (string, string, error) {
+func (s service) UpdateOrder(ctx context.Context, id string, plate string, score int64, state OrderState) (string, string, error) {
 	logger := log.With(s.logger, "method", "UpdateOrder")
 
 	if id == "" {
@@ -66,6 +73,7 @@ func (s service) UpdateOrder(ctx context.Context, id string, plate string, score
 		ID:    uuid.MustParse(id),
 		Plate: plate,
 		Score: score,
+		State: state,
 	}
 
 	if err := s.repostory.UpdateOrder(ctx, order); err != nil {
@@ -76,6 +84,24 @@ func (s service) UpdateOrder(ctx context.Context, id string, plate string, score
 	logger.Log("update order", id)
 
 	return id, "Success", nil
+}
+
+func (s service) UpdateOrderHash(ctx context.Context, id string) error {
+	logger := log.With(s.logger, "method", "UpdateOrderHash")
+
+	order := Order{
+		ID:   uuid.MustParse(id),
+		Hash: encryptSHA256(id),
+	}
+
+	if err := s.repostory.UpdateOrderHash(ctx, order); err != nil {
+		level.Error(logger).Log("err", err)
+		return err
+	}
+
+	logger.Log("update order hash", id)
+
+	return nil
 }
 
 func (s service) CreateCook(ctx context.Context, name string, score int64) (string, string, error) {
@@ -98,7 +124,7 @@ func (s service) CreateCook(ctx context.Context, name string, score int64) (stri
 	return id.String(), "Success", nil
 }
 
-func (s service) UpdateCook(ctx context.Context, id string, score int64) (string, string, error) {
+func (s service) UpdateCook(ctx context.Context, id string, score int64, state int64) (string, string, error) {
 	logger := log.With(s.logger, "method", "UpdateCook")
 
 	if id == "" {
@@ -109,6 +135,7 @@ func (s service) UpdateCook(ctx context.Context, id string, score int64) (string
 	cook := Cook{
 		ID:    uuid.MustParse(id),
 		Score: score,
+		State: state,
 	}
 
 	if err := s.repostory.UpdateCook(ctx, cook); err != nil {
@@ -119,4 +146,18 @@ func (s service) UpdateCook(ctx context.Context, id string, score int64) (string
 	logger.Log("update cook", id)
 
 	return id, "Success", nil
+}
+
+func (s service) GetCookByScore(ctx context.Context, score int64) (*Cook, error) {
+	logger := log.With(s.logger, "method", "GetCookByScore")
+
+	cook, err := s.repostory.GetCookByScore(ctx, score)
+	if err != nil {
+		level.Error(logger).Log("err", err)
+		return nil, err
+	}
+
+	logger.Log("load cooks", cook)
+
+	return cook, nil
 }

@@ -54,7 +54,7 @@ func makeCreateOrderEndpoint(s RestaurantService) endpoint.Endpoint {
 func makeUpdateOrderEndpoint(s RestaurantService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(OrderRequest)
-		id, msg, err := s.UpdateOrder(ctx, req.Id, req.Plate, req.Score)
+		id, msg, err := s.UpdateOrder(ctx, req.Id, req.Plate, req.Score, OrderState(req.State))
 		if err != nil {
 			return Response{Ok: "Invalid data"}, err
 		}
@@ -78,7 +78,7 @@ func makeCreateCookEndpoint(s RestaurantService) endpoint.Endpoint {
 func makeUpdateCookEndpoint(s RestaurantService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(CookRequest)
-		id, msg, err := s.UpdateCook(ctx, req.Id, req.Score)
+		id, msg, err := s.UpdateCook(ctx, req.Id, req.Score, req.State)
 		if err != nil {
 			return Response{Ok: "Invalid data"}, err
 		}
