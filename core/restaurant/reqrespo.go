@@ -21,10 +21,13 @@ type (
 		Id    string `json:"id:omitempty"`
 		Name  string `json:"name"`
 		Score int64  `json:"score"`
+		State int64  `json:"state"`
 	}
 	Response struct {
-		Id   string   `json:"id"`
-		Ok   string   `json:"ok"`
+		Id string `json:"id"`
+		Ok string `json:"ok"`
+	}
+	ListResponse struct {
 		Data []*Order `json:"data"`
 	}
 )
@@ -58,7 +61,7 @@ func decodeCookReq(ctx context.Context, r *http.Request) (interface{}, error) {
 	req.Id = mux.Vars(r)["id"]
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	return req, nil
 }

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 
@@ -21,8 +22,56 @@ import (
 
 const dbsource = "data/restaurant.db"
 
+func takeCook(ctx context.Context, service restaurant.RestaurantService, score int64) *restaurant.Cook {
+	cook, err := service.GetCookByScore(ctx, score)
+	if err != nil {
+		fmt.Printf("failed GetCookByScore: %v", err)
+		return nil
+	}
+
+	return cook
+}
+
+func makeOrder(ctx context.Context, service restaurant.RestaurantService, cook *restaurant.Cook, order *restaurant.Order) {
+	// start to preparer the order
+	service.UpdateCook(ctx, cook.ID.String(), cook.Score, 1)
+	service.UpdateOrder(ctx, order.ID.String(), order.Plate, order.Score, 1)
+	// time to cook
+	time.Sleep(time.Duration(order.Score) * time.Millisecond)
+	// finished the order
+	service.UpdateCook(ctx, cook.ID.String(), cook.Score, 0)
+	service.UpdateOrder(ctx, order.ID.String(), order.Plate, order.Score, 2)
+}
+
+func deliveryOrder(ctx context.Context, service restaurant.RestaurantService, order *restaurant.Order) {
+	service.UpdateOrderHash(ctx, order.ID.String())
+}
+
+func runRestaurantWorker(ctx context.Context, service restaurant.RestaurantService, log log.Logger) {
+	level.Info(log).Log("msg", "restaurant start")
+
+	orders, err := service.GetAllOrder(ctx, 0, false)
+	if err != nil {
+		level.Error(log).Log("error", "something wrong on worker %v", err)
+	}
+
+	defer level.Info(log).Log("msg", "processed orders...")
+	for i := 0; i < len(orders); i++ {
+		go func(index int) {
+			cook := takeCook(ctx, service, orders[index].Score)
+			if cook == nil {
+				level.Info(log).Log("not found", "not found the cook to make a order: %v", orders[index].ID)
+				return
+			}
+
+			makeOrder(ctx, service, cook, orders[index])
+			deliveryOrder(ctx, service, orders[index])
+		}(i)
+	}
+}
+
 func main() {
-	var httpAddr = flag.String("http", ":4000", "http listen address")
+	var httpAddr = flag.String("http", ":5000", "http listen address")
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
@@ -73,6 +122,8 @@ func main() {
 		handler := restaurant.NewHTTPServer(ctx, endpoints)
 		errs <- http.ListenAndServe(*httpAddr, handler)
 	}()
+
+	go runRestaurantWorker(ctx, srv, logger)
 
 	level.Error(logger).Log("exit", <-errs)
 }

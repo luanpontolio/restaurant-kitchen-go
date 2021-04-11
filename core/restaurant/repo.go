@@ -66,13 +66,23 @@ func (repo *repo) CreateOrder(ctx context.Context, order Order) error {
 }
 
 func (repo *repo) UpdateOrder(ctx context.Context, order Order) error {
-	sql := `UPDATE orders SET plate=$1, score=$2 where id=$3 and state=$4`
+	sql := `UPDATE orders SET plate=$1, score=$2, state=$3 where id=$4`
 
 	if order.Plate == "" || order.Score == 0 {
 		return nil
 	}
 
-	_, err := repo.db.ExecContext(ctx, sql, order.Plate, order.Score, order.ID, 0)
+	_, err := repo.db.ExecContext(ctx, sql, order.Plate, order.Score, order.State, order.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *repo) UpdateOrderHash(ctx context.Context, order Order) error {
+	sql := `UPDATE orders SET hash=$1 where id=$2 and state=2`
+
+	_, err := repo.db.ExecContext(ctx, sql, order.Hash, order.ID)
 	if err != nil {
 		return err
 	}
@@ -96,15 +106,27 @@ func (repo *repo) CreateCook(ctx context.Context, cook Cook) error {
 }
 
 func (repo *repo) UpdateCook(ctx context.Context, cook Cook) error {
-	sql := `UPDATE cooks SET score=$1 where id=$2`
+	sql := `UPDATE cooks SET score=$1, state=$2 where id=$3`
 
 	if cook.Score == 0 {
 		return nil
 	}
 
-	_, err := repo.db.ExecContext(ctx, sql, cook.Score, cook.ID)
+	_, err := repo.db.ExecContext(ctx, sql, cook.Score, cook.State, cook.ID)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (repo *repo) GetCookByScore(ctx context.Context, score int64) (*Cook, error) {
+	var c Cook
+
+	sql := "select id, score from cooks where state=0 and score >= $1 limit 1"
+	err := repo.db.QueryRowContext(ctx, sql, score).Scan(&c.ID, &c.Score)
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
 }
