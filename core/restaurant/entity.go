@@ -9,8 +9,8 @@ import (
 )
 
 // table order
-// CREATE TABLE orders(ID string not null primary key, Plate text not null, Score integer not null, State integer, Hash text default '', DeliveryAt timestamp, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
-// CREATE TABLE cooks(ID string not null primary key, Name text not null, Score integer not null, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
+// CREATE TABLE orders(ID string not null primary key, Plate text not null, Score integer not null, State integer default 0, Hash text default '', DeliveryAt timestamp, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
+// CREATE TABLE cooks(ID string not null primary key, Name text not null, Score integer not null, State interger default 0, CreatedAt timestamp  NOT NULL DEFAULT current_timestamp, UpdatedAt timestamp  NOT NULL DEFAULT current_timestamp);
 type Order struct {
 	ID         uuid.UUID      `json:"uuid"`
 	Plate      string         `json:"plate"`
